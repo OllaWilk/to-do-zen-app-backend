@@ -2,6 +2,7 @@ import express, { json } from 'express';
 import cors from 'cors';
 import 'express-async-errors';
 import { handleError } from './utils/errors';
+import { tasksRouter } from './routes/tasks.routes';
 
 const app = express();
 
@@ -12,6 +13,8 @@ app.use(
 );
 
 app.use(json());
+
+app.use('/tasks', tasksRouter);
 app.use(handleError);
 
 app.listen(3001, '0.0.0.0', () => {
