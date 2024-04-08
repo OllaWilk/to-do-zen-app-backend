@@ -1,6 +1,7 @@
 import { FieldPacket } from 'mysql2';
 import { Priority, TaskEntity } from '../types';
 import { pool } from '../utils/db';
+import { ValidationError } from '../utils/errors';
 
 interface NewTaskEntity extends Omit<TaskEntity, 'id'> {
   id: string;
@@ -31,6 +32,22 @@ export class TaskRecord implements TaskEntity {
     this.reminder = obj.reminder;
     this.priority = obj.priority;
     this.description = obj.description;
+
+    if (!obj.title || obj.title.length > 100) {
+      throw new ValidationError(
+        'Title of the task cannot be empty or exceed 100 characters.'
+      );
+    }
+
+    if (!obj.priority) {
+      throw new ValidationError('The priority must be selected');
+    }
+
+    if (obj.description.length > 1000) {
+      throw new ValidationError(
+        'The description cannot be exceed 1000 characters.'
+      );
+    }
   }
 
   static async getAll(): Promise<TaskRecord[]> {

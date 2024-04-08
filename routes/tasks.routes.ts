@@ -6,6 +6,4 @@ export const tasksRouter = Router();
 tasksRouter.get('/', async (req, res) => {
   const taskRecord = await TaskRecord.getAll();
   res.json({ taskRecord });
-
-  console.log(taskRecord);
 });
