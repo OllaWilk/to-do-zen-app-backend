@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { TaskRecord } from '../records/task.record';
 import { ValidationError } from '../utils/errors';
-import { CreateTaskReq } from '../types';
+import { time } from 'console';
 
 export const tasksRouter = Router();
 
@@ -17,6 +17,7 @@ tasksRouter
     if (!task) {
       throw new ValidationError('There is no such task');
     }
+
     res.json(task);
   })
 
@@ -30,9 +31,33 @@ tasksRouter
       description: req.body.description,
     });
 
-    console.log(req.body);
-    console.log(task);
-
     await task.insert();
-    await res.end();
+    res.json(task);
+    res.end();
+  })
+
+  .post('/:id', async (req, res) => {
+    const task = await TaskRecord.getOne(req.params.id);
+    const validPriorities = ['low', 'medium', 'high'];
+    const updatedTaskData = {
+      title: req.body.title,
+      category: req.body.category,
+      reminder: req.body.reminder,
+      priority: req.body.priority,
+      description: req.body.description,
+    };
+
+    if (!task) {
+      throw new ValidationError('Task not found');
+    }
+
+    console.log(updatedTaskData.category);
+    if (!validPriorities.includes(updatedTaskData.priority)) {
+      throw new ValidationError(
+        'Invalid priority. Please select one of the following priorities: low, medium, high'
+      );
+    }
+    await task.update(updatedTaskData);
+    res.json(task);
+    res.end();
   });

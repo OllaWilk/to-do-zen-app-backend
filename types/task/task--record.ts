@@ -17,4 +17,4 @@ export interface TaskEntity extends TaskSimpleEntity {
   description?: string;
 }
 
-export type CreateTaskReq = Omit<TaskEntity, 'id' | 'date'>;
+export type CreateTaskReq = Omit<TaskEntity, 'id' | 'time'>;

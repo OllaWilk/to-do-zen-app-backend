@@ -1,6 +1,6 @@
 import { FieldPacket } from 'mysql2';
 import { v4 as uuid } from 'uuid';
-import { Priority, TaskEntity } from '../types';
+import { CreateTaskReq, Priority, TaskEntity } from '../types';
 import { pool } from '../utils/db';
 import { ValidationError } from '../utils/errors';
 
@@ -77,5 +77,13 @@ export class TaskRecord implements TaskEntity {
     );
   }
 
-  async update(): Promise<void> {}
+  async update(updatedTaskData: CreateTaskReq): Promise<void> {
+    await pool.execute(
+      'UPDATE `tasks` SET `title` = :title , `category` = :category , `reminder` = :reminder , `priority` = :priority , `description` = :description  WHERE `id` = :id',
+      {
+        id: this.id,
+        ...updatedTaskData,
+      }
+    );
+  }
 }

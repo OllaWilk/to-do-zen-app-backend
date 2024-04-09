@@ -16,11 +16,6 @@ app.use(
   })
 );
 
-app.use((req, res, next) => {
-  console.log(req.body);
-  next();
-});
-
 app.use(json());
 
 app.use(methodOverride('_method'));
