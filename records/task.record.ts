@@ -86,4 +86,10 @@ export class TaskRecord implements TaskEntity {
       }
     );
   }
+
+  async delete(): Promise<void> {
+    await pool.execute(' DELETE FROM `tasks` WHERE `id` = :id', {
+      id: this.id,
+    });
+  }
 }

@@ -52,12 +52,24 @@ tasksRouter
     }
 
     console.log(updatedTaskData.category);
-    if (!validPriorities.includes(updatedTaskData.priority)) {
+    if (!validPriorities.includes(updatedTaskData.category)) {
       throw new ValidationError(
         'Invalid priority. Please select one of the following priorities: low, medium, high'
       );
     }
     await task.update(updatedTaskData);
+    res.json(task);
+    res.end();
+  })
+
+  .delete('/:id', async (req, res) => {
+    const task = await TaskRecord.getOne(req.params.id);
+
+    if (!task) {
+      throw new ValidationError('No such gift');
+    }
+
+    await task.delete();
     res.json(task);
     res.end();
   });
