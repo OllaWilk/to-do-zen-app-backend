@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { TaskRecord } from '../records/task.record';
 import { ValidationError } from '../utils/errors';
+import { CreateTaskReq } from '../types';
 
 export const tasksRouter = Router();
 
@@ -16,6 +17,22 @@ tasksRouter
     if (!task) {
       throw new ValidationError('There is no such task');
     }
-
     res.json(task);
+  })
+
+  .post('/', async (req, res) => {
+    const task = new TaskRecord({
+      ...req.body,
+      title: req.body.title,
+      category: req.body.category,
+      reminder: req.body.reminder,
+      priority: req.body.priority,
+      description: req.body.description,
+    });
+
+    console.log(req.body);
+    console.log(task);
+
+    await task.insert();
+    await res.end();
   });

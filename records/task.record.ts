@@ -1,22 +1,13 @@
 import { FieldPacket } from 'mysql2';
+import { v4 as uuid } from 'uuid';
 import { Priority, TaskEntity } from '../types';
 import { pool } from '../utils/db';
 import { ValidationError } from '../utils/errors';
 
-interface NewTaskEntity extends Omit<TaskEntity, 'id'> {
-  id: string;
-  time: Date;
-  title: string;
-  category?: string;
-  reminder?: boolean;
-  priority: Priority;
-  description?: string;
-}
-
 type TaskRecordResults = [TaskRecord[], FieldPacket[]];
 
 export class TaskRecord implements TaskEntity {
-  public id: string;
+  public id?: string;
   public time: Date;
   public title: string;
   public category?: string;
@@ -25,15 +16,17 @@ export class TaskRecord implements TaskEntity {
   public description?: string;
 
   constructor(obj: TaskEntity) {
-    this.id = obj.id;
-    this.time = obj.time;
-    this.title = obj.title;
-    this.category = obj.category;
-    this.reminder = obj.reminder;
-    this.priority = obj.priority;
-    this.description = obj.description;
+    const { id, time, title, category, reminder, priority, description } = obj;
 
-    if (!obj.title || obj.title.length > 100) {
+    this.id = id ?? uuid();
+    this.time = time ?? new Date();
+    this.title = title;
+    this.category = category;
+    this.reminder = reminder ?? null;
+    this.priority = priority;
+    this.description = description;
+
+    if (!obj.title) {
       throw new ValidationError(
         'Title of the task cannot be empty or exceed 100 characters.'
       );
@@ -68,4 +61,21 @@ export class TaskRecord implements TaskEntity {
 
     return results.length === 0 ? null : new TaskRecord(results[0]);
   }
+
+  async insert(): Promise<void> {
+    await pool.execute(
+      'INSERT INTO `tasks` (`id`, `time`, `title`, `category`, `reminder`, `priority`, `description`) VALUES (:id, :time, :title, :category, :reminder, :priority, :description)',
+      {
+        id: this.id,
+        time: this.time,
+        title: this.title,
+        category: this.category,
+        reminder: this.reminder,
+        priority: this.priority,
+        description: this.description,
+      }
+    );
+  }
+
+  async update(): Promise<void> {}
 }

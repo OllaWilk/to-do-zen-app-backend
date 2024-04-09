@@ -5,7 +5,7 @@ export enum Priority {
 }
 
 export interface TaskSimpleEntity {
-  id: string;
+  id?: string;
   time: Date;
   title: string;
 }
@@ -16,3 +16,5 @@ export interface TaskEntity extends TaskSimpleEntity {
   priority: Priority;
   description?: string;
 }
+
+export type CreateTaskReq = Omit<TaskEntity, 'id' | 'date'>;
