@@ -1,6 +1,6 @@
 import { FieldPacket } from 'mysql2';
 import { v4 as uuid } from 'uuid';
-import { CreateTaskReq, Priority, TaskEntity } from '../types';
+import { Category, CreateTaskReq, Priority, TaskEntity } from '../types';
 import { pool } from '../utils/db';
 import { ValidationError } from '../utils/errors';
 
@@ -10,19 +10,17 @@ export class TaskRecord implements TaskEntity {
   public id?: string;
   public time: Date;
   public title: string;
-  public category?: string;
-  public reminder?: boolean;
-  public priority: Priority;
+  public category: Category;
+  public priority?: Priority;
   public description?: string;
 
   constructor(obj: TaskEntity) {
-    const { id, time, title, category, reminder, priority, description } = obj;
+    const { id, time, title, category, priority, description } = obj;
 
     this.id = id ?? uuid();
     this.time = time ?? new Date();
     this.title = title;
     this.category = category;
-    this.reminder = reminder ?? null;
     this.priority = priority;
     this.description = description;
 
@@ -30,10 +28,6 @@ export class TaskRecord implements TaskEntity {
       throw new ValidationError(
         'Title of the task cannot be empty or exceed 100 characters.'
       );
-    }
-
-    if (!obj.priority) {
-      throw new ValidationError('The priority must be selected');
     }
 
     if (obj.description.length > 1000) {
@@ -64,13 +58,12 @@ export class TaskRecord implements TaskEntity {
 
   async insert(): Promise<void> {
     await pool.execute(
-      'INSERT INTO `tasks` (`id`, `time`, `title`, `category`, `reminder`, `priority`, `description`) VALUES (:id, :time, :title, :category, :reminder, :priority, :description)',
+      'INSERT INTO `tasks` (`id`, `time`, `title`, `category`, `priority`, `description`) VALUES (:id, :time, :title, :category, :priority, :description)',
       {
         id: this.id,
         time: this.time,
         title: this.title,
         category: this.category,
-        reminder: this.reminder,
         priority: this.priority,
         description: this.description,
       }
@@ -79,7 +72,7 @@ export class TaskRecord implements TaskEntity {
 
   async update(updatedTaskData: CreateTaskReq): Promise<void> {
     await pool.execute(
-      'UPDATE `tasks` SET `title` = :title , `category` = :category , `reminder` = :reminder , `priority` = :priority , `description` = :description  WHERE `id` = :id',
+      'UPDATE `tasks` SET `title` = :title , `category` = :category , `priority` = :priority , `description` = :description  WHERE `id` = :id',
       {
         id: this.id,
         ...updatedTaskData,

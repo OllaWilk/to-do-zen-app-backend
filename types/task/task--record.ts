@@ -4,6 +4,11 @@ export enum Priority {
   High = 'high',
 }
 
+export enum Category {
+  ToDo = 'to do',
+  InProgress = 'in progress',
+  Done = 'done',
+}
 export interface TaskSimpleEntity {
   id?: string;
   time: Date;
@@ -11,9 +16,8 @@ export interface TaskSimpleEntity {
 }
 
 export interface TaskEntity extends TaskSimpleEntity {
-  category?: string;
-  reminder?: boolean;
-  priority: Priority;
+  category: Category;
+  priority?: Priority;
   description?: string;
 }
 

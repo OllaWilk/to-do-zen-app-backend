@@ -26,7 +26,6 @@ tasksRouter
       ...req.body,
       title: req.body.title,
       category: req.body.category,
-      reminder: req.body.reminder,
       priority: req.body.priority,
       description: req.body.description,
     });
@@ -38,11 +37,9 @@ tasksRouter
 
   .post('/:id', async (req, res) => {
     const task = await TaskRecord.getOne(req.params.id);
-    const validPriorities = ['low', 'medium', 'high'];
     const updatedTaskData = {
       title: req.body.title,
       category: req.body.category,
-      reminder: req.body.reminder,
       priority: req.body.priority,
       description: req.body.description,
     };
@@ -51,12 +48,6 @@ tasksRouter
       throw new ValidationError('Task not found');
     }
 
-    console.log(updatedTaskData.category);
-    if (!validPriorities.includes(updatedTaskData.category)) {
-      throw new ValidationError(
-        'Invalid priority. Please select one of the following priorities: low, medium, high'
-      );
-    }
     await task.update(updatedTaskData);
     res.json(task);
     res.end();
