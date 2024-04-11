@@ -35,7 +35,7 @@ tasksRouter
     res.end();
   })
 
-  .post('/:id', async (req, res) => {
+  .patch('/:id', async (req, res) => {
     const task = await TaskRecord.getOne(req.params.id);
     const updatedTaskData = {
       title: req.body.title,
