@@ -49,7 +49,7 @@ tasksRouter
     }
 
     await task.update(updatedTaskData);
-    res.json(task);
+    res.json(updatedTaskData);
     res.end();
   })
 
