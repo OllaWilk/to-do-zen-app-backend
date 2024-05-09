@@ -1,12 +1,12 @@
 import { FieldPacket } from 'mysql2';
 import { v4 as uuid } from 'uuid';
-import { Category, CreateTaskReq, Priority, TaskEntity } from '../types';
+import { Category, CreateEventReq, Priority, EventEntity } from '../types';
 import { pool } from '../utils/db';
 import { ValidationError } from '../utils/errors';
 
-type TaskRecordResults = [TaskRecord[], FieldPacket[]];
+type EventRecordResults = [EventRecord[], FieldPacket[]];
 
-export class TaskRecord implements TaskEntity {
+export class EventRecord implements EventEntity {
   public id?: string;
   public time: Date;
   public title: string;
@@ -14,7 +14,7 @@ export class TaskRecord implements TaskEntity {
   public priority?: Priority;
   public description?: string;
 
-  constructor(obj: TaskEntity) {
+  constructor(obj: EventEntity) {
     const { id, time, title, category, priority, description } = obj;
 
     this.id = id ?? uuid();
@@ -37,23 +37,23 @@ export class TaskRecord implements TaskEntity {
     }
   }
 
-  static async getAll(): Promise<TaskRecord[]> {
+  static async getAll(): Promise<EventRecord[]> {
     const [results] = (await pool.execute(
       'SELECT * FROM `tasks`'
-    )) as TaskRecordResults;
+    )) as EventRecordResults;
 
-    return results.map((obj) => new TaskRecord(obj));
+    return results.map((obj) => new EventRecord(obj));
   }
 
-  static async getOne(id: string): Promise<TaskRecord | null> {
+  static async getOne(id: string): Promise<EventRecord | null> {
     const [results] = (await pool.execute(
       'SELECT * FROM `tasks` WHERE `id` = :id',
       {
         id,
       }
-    )) as TaskRecordResults;
+    )) as EventRecordResults;
 
-    return results.length === 0 ? null : new TaskRecord(results[0]);
+    return results.length === 0 ? null : new EventRecord(results[0]);
   }
 
   async insert(): Promise<void> {
@@ -70,12 +70,12 @@ export class TaskRecord implements TaskEntity {
     );
   }
 
-  async update(updatedTaskData: CreateTaskReq): Promise<void> {
+  async update(updatedEventData: CreateEventReq): Promise<void> {
     await pool.execute(
       'UPDATE `tasks` SET `title` = :title , `category` = :category , `priority` = :priority , `description` = :description  WHERE `id` = :id',
       {
         id: this.id,
-        ...updatedTaskData,
+        ...updatedEventData,
       }
     );
   }
