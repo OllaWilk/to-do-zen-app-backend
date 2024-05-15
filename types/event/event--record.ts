@@ -1,24 +1,24 @@
-export enum Priority {
-  Low = 'low',
-  Medium = 'medium',
-  High = 'high',
-}
-
-export enum Category {
-  ToDo = 'to do',
-  InProgress = 'in progress',
-  Done = 'done',
-}
-export interface EventSimpleEntity {
+export interface NewEventEntity extends Omit<EventEntity, 'id'> {
   id?: string;
   time: Date;
+}
+export interface EventSimpleEntity {
+  id: string;
   title: string;
+  time: Date;
+  price: number | 'free';
+  date: string;
+  location: string;
+  status: 'planed' | 'ongoing' | 'completed';
 }
 
 export interface EventEntity extends EventSimpleEntity {
-  category: Category;
-  priority?: Priority;
   description?: string;
+  url: string;
+  lat: number;
+  lon: number;
+  participants: string[];
+  category: string;
+  duration: string;
+  reminder?: string;
 }
-
-export type CreateEventReq = Omit<EventEntity, 'id' | 'time'>;
