@@ -6,7 +6,7 @@ import { urlencoded } from 'express';
 
 import 'express-async-errors';
 import { handleError } from './utils/errors';
-import { tasksRouter } from './routes/tasks.routes';
+import { eventsRouter } from './routes/events.routes';
 
 const app = express();
 
@@ -23,7 +23,7 @@ app.use(json());
 app.use(methodOverride('_method'));
 app.use(urlencoded({ extended: true }));
 
-app.use('/tasks', tasksRouter);
+app.use('/events', eventsRouter);
 app.use(handleError);
 
 app.listen(3001, '0.0.0.0', () => {

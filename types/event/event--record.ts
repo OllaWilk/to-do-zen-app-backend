@@ -9,16 +9,16 @@ export enum Category {
   InProgress = 'in progress',
   Done = 'done',
 }
-export interface TaskSimpleEntity {
+export interface EventSimpleEntity {
   id?: string;
   time: Date;
   title: string;
 }
 
-export interface TaskEntity extends TaskSimpleEntity {
+export interface EventEntity extends EventSimpleEntity {
   category: Category;
   priority?: Priority;
   description?: string;
 }
 
-export type CreateTaskReq = Omit<TaskEntity, 'id' | 'time'>;
+export type CreateEventReq = Omit<EventEntity, 'id' | 'time'>;
