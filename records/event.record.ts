@@ -26,7 +26,7 @@ export class EventRecord implements EventEntity {
 
     if (!obj.title) {
       throw new ValidationError(
-        'Title of the task cannot be empty or exceed 100 characters.'
+        'Title of the event cannot be empty or exceed 100 characters.'
       );
     }
 
@@ -39,7 +39,7 @@ export class EventRecord implements EventEntity {
 
   static async getAll(): Promise<EventRecord[]> {
     const [results] = (await pool.execute(
-      'SELECT * FROM `tasks`'
+      'SELECT * FROM `events`'
     )) as EventRecordResults;
 
     return results.map((obj) => new EventRecord(obj));
@@ -47,7 +47,7 @@ export class EventRecord implements EventEntity {
 
   static async getOne(id: string): Promise<EventRecord | null> {
     const [results] = (await pool.execute(
-      'SELECT * FROM `tasks` WHERE `id` = :id',
+      'SELECT * FROM `events` WHERE `id` = :id',
       {
         id,
       }
@@ -58,7 +58,7 @@ export class EventRecord implements EventEntity {
 
   async insert(): Promise<void> {
     await pool.execute(
-      'INSERT INTO `tasks` (`id`, `time`, `title`, `category`, `priority`, `description`) VALUES (:id, :time, :title, :category, :priority, :description)',
+      'INSERT INTO `events` (`id`, `time`, `title`, `category`, `priority`, `description`) VALUES (:id, :time, :title, :category, :priority, :description)',
       {
         id: this.id,
         time: this.time,
@@ -72,7 +72,7 @@ export class EventRecord implements EventEntity {
 
   async update(updatedEventData: CreateEventReq): Promise<void> {
     await pool.execute(
-      'UPDATE `tasks` SET `title` = :title , `category` = :category , `priority` = :priority , `description` = :description  WHERE `id` = :id',
+      'UPDATE `events` SET `title` = :title , `category` = :category , `priority` = :priority , `description` = :description  WHERE `id` = :id',
       {
         id: this.id,
         ...updatedEventData,
@@ -81,7 +81,7 @@ export class EventRecord implements EventEntity {
   }
 
   async delete(): Promise<void> {
-    await pool.execute(' DELETE FROM `tasks` WHERE `id` = :id', {
+    await pool.execute(' DELETE FROM `events` WHERE `id` = :id', {
       id: this.id,
     });
   }

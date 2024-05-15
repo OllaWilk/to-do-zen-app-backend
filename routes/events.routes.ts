@@ -6,8 +6,8 @@ export const eventsRouter = Router();
 
 eventsRouter
   .get('/', async (req, res) => {
-    const eventsRecord = await EventRecord.getAll();
-    res.json({ eventsRecord });
+    const eventRecord = await EventRecord.getAll();
+    res.json({ eventRecord });
   })
   .get('/:id', async (req, res) => {
     const eventId = req.params.id;
@@ -32,7 +32,6 @@ eventsRouter
     await event.insert();
     res.json(event);
     res.end();
-    console.log(event);
   })
 
   .patch('/:id', async (req, res) => {
