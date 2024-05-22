@@ -23,10 +23,20 @@ eventsRouter
   .post('/', async (req, res) => {
     const event = new EventRecord({
       ...req.body,
+      id: req.body.id,
       title: req.body.title,
-      category: req.body.category,
-      priority: req.body.priority,
+      created_at: req.body.created_at,
+      price: Number(req.body.price),
+      date: req.body.date,
+      status: req.body.status,
       description: req.body.description,
+      url: req.body.url,
+      lat: Number(req.body.lat),
+      lon: Number(req.body.lon),
+      category: req.body.category,
+      duration: req.body.duration,
+      reminder: Number(req.body.reminder),
+      creator_id: req.body.creator_id,
     });
 
     await event.insert();
@@ -37,10 +47,18 @@ eventsRouter
   .patch('/:id', async (req, res) => {
     const event = await EventRecord.getOne(req.params.id);
     const updatedEventData = {
+      created_at: new Date(),
       title: req.body.title,
-      category: req.body.category,
-      priority: req.body.priority,
+      price: Number(req.body.price),
+      date: req.body.date,
+      status: req.body.status,
       description: req.body.description,
+      url: req.body.url,
+      lat: Number(req.body.lat),
+      lon: Number(req.body.lon),
+      category: req.body.category,
+      duration: req.body.duration,
+      reminder: Number(req.body.reminder),
     };
 
     if (!event) {
@@ -56,7 +74,7 @@ eventsRouter
     const event = await EventRecord.getOne(req.params.id);
 
     if (!event) {
-      throw new ValidationError('No such gift');
+      throw new ValidationError('No such event');
     }
 
     await event.delete();

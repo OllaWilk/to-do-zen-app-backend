@@ -1,6 +1,6 @@
 import { FieldPacket } from 'mysql2';
 import { v4 as uuid } from 'uuid';
-import { Category, CreateEventReq, Priority, EventEntity } from '../types';
+import { EventEntity } from '../types';
 import { pool } from '../utils/db';
 import { ValidationError } from '../utils/errors';
 
@@ -8,22 +8,54 @@ type EventRecordResults = [EventRecord[], FieldPacket[]];
 
 export class EventRecord implements EventEntity {
   public id?: string;
-  public time: Date;
   public title: string;
-  public category: Category;
-  public priority?: Priority;
+  public created_at: Date;
+  public price: number | 'free';
+  public date?: Date;
+  public status: 'planed' | 'ongoing' | 'completed';
   public description?: string;
+  public url?: string;
+  public lat?: number;
+  public lon?: number;
+  public category: string;
+  public duration?: string;
+  public reminder?: number;
+  public creator_id: string;
 
   constructor(obj: EventEntity) {
-    const { id, time, title, category, priority, description } = obj;
+    const {
+      id,
+      title,
+      created_at,
+      price,
+      date,
+      status,
+      description,
+      url,
+      lat,
+      lon,
+      category,
+      duration,
+      reminder,
+      creator_id,
+    } = obj;
 
     this.id = id ?? uuid();
-    this.time = time ?? new Date();
     this.title = title;
-    this.category = category;
-    this.priority = priority;
+    this.created_at = new Date();
+    this.price = price ?? 0;
+    this.date = date ?? new Date();
+    this.status = status;
     this.description = description;
+    this.url = url;
+    this.lat = lat;
+    this.lon = lon;
+    this.category = category;
+    this.duration = duration;
+    this.reminder = reminder;
+    this.creator_id = creator_id;
 
+    /* Validation */
     if (!obj.title) {
       throw new ValidationError(
         'Title of the event cannot be empty or exceed 100 characters.'
@@ -58,23 +90,35 @@ export class EventRecord implements EventEntity {
 
   async insert(): Promise<void> {
     await pool.execute(
-      'INSERT INTO `events` (`id`, `time`, `title`, `category`, `priority`, `description`) VALUES (:id, :time, :title, :category, :priority, :description)',
+      'INSERT INTO `events` (`id`, `created_at`, `title`, `price`, `date`, `status`, `description`, `url`, `lat`, `lon`, `category`, `duration`, `reminder`, `creator_id`) VALUES (:id, :created_at, :title,  :price, :date, :status , :description , :url, :lat, :lon , :category, :duration, :reminder, :creator_id)',
       {
         id: this.id,
-        time: this.time,
+        created_at: this.created_at,
         title: this.title,
-        category: this.category,
-        priority: this.priority,
+        price: this.price,
+        date: this.date,
+        status: this.status,
         description: this.description,
+        url: this.url,
+        lat: this.lat,
+        lon: this.lon,
+        category: this.category,
+        duration: this.duration,
+        reminder: this.reminder,
+        creator_id: this.creator_id,
       }
     );
   }
 
-  async update(updatedEventData: CreateEventReq): Promise<void> {
+  async update(
+    updatedEventData: Omit<EventEntity, 'id' | 'creator_id'>
+  ): Promise<void> {
+    console.log(this.id, this.creator_id, this.created_at);
     await pool.execute(
-      'UPDATE `events` SET `title` = :title , `category` = :category , `priority` = :priority , `description` = :description  WHERE `id` = :id',
+      'UPDATE `events` SET `created_at` = :created_at, `title` = :title ,  `price` = :price, `date` = :date, `status` = :status,  `description` = :description ,`url` = :url, `lat` = :lat, `lon` = :lon,  `category` = :category , `duration` = :duration , `reminder` = :reminder  WHERE `id` = :id',
       {
         id: this.id,
+        creator_id: this.creator_id,
         ...updatedEventData,
       }
     );

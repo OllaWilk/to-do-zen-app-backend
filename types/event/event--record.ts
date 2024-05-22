@@ -1,24 +1,24 @@
 export interface NewEventEntity extends Omit<EventEntity, 'id'> {
   id?: string;
-  time: Date;
+  created_at: Date;
 }
+
 export interface EventSimpleEntity {
-  id: string;
+  id?: string;
   title: string;
-  time: Date;
+  created_at: Date;
   price: number | 'free';
-  date: string;
-  location: string;
+  date?: Date;
   status: 'planed' | 'ongoing' | 'completed';
 }
 
 export interface EventEntity extends EventSimpleEntity {
   description?: string;
-  url: string;
-  lat: number;
-  lon: number;
-  participants: string[];
+  url?: string;
+  lat?: number;
+  lon?: number;
   category: string;
-  duration: string;
-  reminder?: string;
+  duration?: string;
+  reminder?: number;
+  creator_id: string;
 }
