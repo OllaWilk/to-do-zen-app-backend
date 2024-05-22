@@ -113,7 +113,6 @@ export class EventRecord implements EventEntity {
   async update(
     updatedEventData: Omit<EventEntity, 'id' | 'creator_id'>
   ): Promise<void> {
-    console.log(this.id, this.creator_id, this.created_at);
     await pool.execute(
       'UPDATE `events` SET `created_at` = :created_at, `title` = :title ,  `price` = :price, `date` = :date, `status` = :status,  `description` = :description ,`url` = :url, `lat` = :lat, `lon` = :lon,  `category` = :category , `duration` = :duration , `reminder` = :reminder  WHERE `id` = :id',
       {
