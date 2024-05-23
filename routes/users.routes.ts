@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import bcrypt from 'bcrypt';
 import { ValidationError } from '../utils/errors';
 import { UserRecord } from '../records/user.record';
 
@@ -9,19 +10,35 @@ usersRouter
     const usersRecord = await UserRecord.getAll();
     res.json({ usersRecord });
   })
-  .post('/login', async (req, res) => {
-    const user = new UserRecord({
-      ...req.body,
-      id: req.body.id,
-      username: req.body.username,
-      email: req.body.email,
-      created_at: req.body.created_at,
-      password_hash: req.body.password_hash,
-    });
 
-    await user.insert();
-    res.json(user);
-  })
+  .post('/login', async (req, res) => {})
+
   .post('/signup', async (req, res) => {
-    res.json({ message: 'signin' });
+    const { email, password, username } = req.body;
+    if (!email) {
+      throw new ValidationError('Email and password fields cannot be empty.');
+    }
+
+    const exists = await UserRecord.getOne(email);
+
+    if (exists) {
+      throw new ValidationError(
+        'This email is already in use. Please use a different email or try logging in.'
+      );
+    } else {
+      const salt = await bcrypt.genSalt(10);
+      const hash = await bcrypt.hash(password, salt);
+
+      const user = new UserRecord({
+        ...req.body,
+        username: username,
+        email: email,
+        password_hash: hash,
+      });
+
+      await user.signup();
+      res.status(200).json(user);
+    }
+
+    res.end();
   });

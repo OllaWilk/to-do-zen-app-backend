@@ -6,11 +6,11 @@ import { pool } from '../utils/db';
 type UserRecordResults = [UserEntity[], FieldPacket[]];
 
 export class UserRecord implements UserEntity {
-  public id: string;
+  public id?: string;
   public username: string;
   public email: string;
   private _password_hash: string;
-  public created_at: Date;
+  public created_at?: Date;
 
   constructor(obj: UserEntity) {
     const { id, username, email, password_hash } = obj;
@@ -38,7 +38,17 @@ export class UserRecord implements UserEntity {
     return users.map((obj) => new UserRecord(obj));
   }
 
-  async insert(): Promise<void> {
+  static async getOne(email: string): Promise<UserEntity | null> {
+    const [results] = (await pool.execute(
+      'SELECT * FROM `users` WHERE `email` = :email',
+      {
+        email,
+      }
+    )) as UserRecordResults;
+    return results.length === 0 ? null : new UserRecord(results[0]);
+  }
+
+  async signup(): Promise<void> {
     await pool.execute(
       'INSERT INTO `users` (`id`, `username`, `email`, `password_hash`, `created_at`) VALUES (:id, :username, :email, :password_hash, :created_at)',
       {
