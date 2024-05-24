@@ -1,8 +1,9 @@
-import bcrypt from 'bcrypt';
 import { v4 as uuid } from 'uuid';
-import { FieldPacket } from 'mysql2';
+import bcrypt from 'bcrypt';
 import validator from 'validator';
 import { ValidationError } from '../utils/errors';
+
+import { FieldPacket } from 'mysql2';
 import { UserEntity } from '../types';
 import { pool } from '../utils/db';
 
@@ -23,36 +24,6 @@ export class UserRecord implements UserEntity {
     this.email = email;
     this.password_hash = password_hash;
     this.created_at = new Date();
-
-    /* VALIDATION */
-    const missingFields = [];
-    if (!email) missingFields.push('email');
-    if (!password_hash) missingFields.push('password');
-
-    if (missingFields.length > 0) {
-      throw new ValidationError(
-        `The following fields cannot be empty: ${missingFields.join(', ')}.`
-      );
-    }
-
-    if (!validator.isEmail(email)) {
-      throw new ValidationError('Email is not valid.');
-    }
-
-    if (
-      !validator.isStrongPassword(password_hash, {
-        minLength: 8,
-        minLowercase: 1,
-        minUppercase: 1,
-        minNumbers: 1,
-        minSymbols: 1,
-        returnScore: false,
-      })
-    ) {
-      throw new ValidationError(
-        'Password not strong enough. It should contain at least one uppercase letter, one lowercase letter, one number, one special character, and be a maximum of 8 characters long.'
-      );
-    }
   }
 
   get password_hash(): string {
@@ -61,6 +32,35 @@ export class UserRecord implements UserEntity {
 
   set password_hash(value: string) {
     this._password_hash = value;
+  }
+
+  private validate(passwordErrorMessage: string) {
+    const missingFields = [];
+    if (!this.email) missingFields.push('email');
+    if (!this.password_hash) missingFields.push('password');
+
+    if (missingFields.length > 0) {
+      throw new ValidationError(
+        `The following fields cannot be empty: ${missingFields.join(', ')}.`
+      );
+    }
+
+    if (!validator.isEmail(this.email)) {
+      throw new ValidationError('Email is not valid.');
+    }
+
+    if (
+      !validator.isStrongPassword(this.password_hash, {
+        minLength: 8,
+        minLowercase: 1,
+        minUppercase: 1,
+        minNumbers: 1,
+        minSymbols: 1,
+        returnScore: false,
+      })
+    ) {
+      throw new ValidationError(`${passwordErrorMessage}`);
+    }
   }
 
   static async getAll(): Promise<UserRecord[]> {
@@ -81,7 +81,11 @@ export class UserRecord implements UserEntity {
     return results.length === 0 ? null : new UserRecord(results[0]);
   }
 
-  async addOne(): Promise<void> {
+  async signup(): Promise<void> {
+    this.validate(
+      'Password not strong enough. It should contain at least one uppercase letter, one lowercase letter, one number, one special character, and be a maximum of 8 characters long.'
+    );
+
     const salt = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(this.password_hash, salt);
     this._password_hash = hash;
@@ -96,5 +100,33 @@ export class UserRecord implements UserEntity {
         created_at: this.created_at,
       }
     );
+  }
+
+  static async login(email: string, password: string): Promise<UserEntity> {
+    if (!email || !password) {
+      throw new ValidationError(
+        'The following fields cannot be empty: email, password.'
+      );
+    }
+
+    const [results] = (await pool.execute(
+      'SELECT * FROM `users` WHERE `email` = :email ',
+      {
+        email,
+      }
+    )) as UserRecordResults;
+
+    if (results.length === 0) {
+      throw new ValidationError('Incorrect email or password');
+    }
+
+    const user = new UserRecord(results[0]);
+    const match = await bcrypt.compare(password, user.password_hash);
+
+    if (!match) {
+      throw new ValidationError('Incorrect email or password');
+    }
+
+    return user;
   }
 }

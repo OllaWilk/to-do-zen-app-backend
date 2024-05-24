@@ -12,6 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "@types/bcrypt": "^5.0.2",
+    "@types/jsonwebtoken": "^9.0.6",
     "@types/method-override": "^0.0.35",
     "@types/validator": "^13.11.10",
     "bcrypt": "^5.1.1",
@@ -19,6 +20,7 @@
     "express": "^4.19.2",
     "express-async-errors": "^3.1.1",
     "express-rate-limit": "^7.2.0",
+    "jsonwebtoken": "^9.0.2",
     "method-override": "^3.0.0",
     "mysql2": "^3.9.3",
     "uuid": "^9.0.1",
