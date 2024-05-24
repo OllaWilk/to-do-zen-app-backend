@@ -1,4 +1,5 @@
 import express, { json } from 'express';
+import dotenv from 'dotenv';
 import cors from 'cors';
 import methodOverride from 'method-override';
 
@@ -6,9 +7,10 @@ import { urlencoded } from 'express';
 import 'express-async-errors';
 import { handleError } from './utils/errors';
 import { eventsRouter } from './routes/events.routes';
+import { usersRouter } from './routes/users.routes';
 
 const app = express();
-
+dotenv.config();
 app.use(
   cors({
     origin: 'http://localhost:3000',
@@ -23,8 +25,11 @@ app.use(methodOverride('_method'));
 app.use(urlencoded({ extended: true }));
 
 app.use('/events', eventsRouter);
+app.use('/user', usersRouter);
 app.use(handleError);
 
-app.listen(3001, '0.0.0.0', () => {
-  console.log('Listening on port http://localhost:3001');
+const PORT = parseInt(process.env.PORT || '3001', 10);
+
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Listening on port http://localhost:${PORT}`);
 });

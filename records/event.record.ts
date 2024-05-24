@@ -26,7 +26,6 @@ export class EventRecord implements EventEntity {
     const {
       id,
       title,
-      created_at,
       price,
       date,
       status,
