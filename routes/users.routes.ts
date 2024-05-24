@@ -1,5 +1,4 @@
 import { Router } from 'express';
-import bcrypt from 'bcrypt';
 import { ValidationError } from '../utils/errors';
 import { UserRecord } from '../records/user.record';
 
@@ -14,31 +13,22 @@ usersRouter
   .post('/login', async (req, res) => {})
 
   .post('/signup', async (req, res) => {
-    const { email, password, username } = req.body;
-    if (!email) {
-      throw new ValidationError('Email and password fields cannot be empty.');
-    }
+    const { email, password } = req.body;
 
     const exists = await UserRecord.getOne(email);
 
     if (exists) {
       throw new ValidationError(
-        'This email is already in use. Please use a different email or try logging in.'
+        'It looks like you already have an account with us. Please try logging in'
       );
-    } else {
-      const salt = await bcrypt.genSalt(10);
-      const hash = await bcrypt.hash(password, salt);
-
-      const user = new UserRecord({
-        ...req.body,
-        username: username,
-        email: email,
-        password_hash: hash,
-      });
-
-      await user.signup();
-      res.status(200).json(user);
     }
+    const user = new UserRecord({
+      ...req.body,
+      email,
+      password_hash: password,
+    });
+    await user.addOne();
+    res.status(200).json(user);
 
     res.end();
   });
