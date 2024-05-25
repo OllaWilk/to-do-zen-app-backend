@@ -1,12 +1,12 @@
 export interface NewEventEntity extends Omit<EventEntity, 'id'> {
   id?: string;
-  created_at: Date;
+  created_at?: Date;
 }
 
 export interface EventSimpleEntity {
   id?: string;
   title: string;
-  created_at: Date;
+  created_at?: Date;
   price: number | 'free';
   date?: Date;
   status: 'planed' | 'ongoing' | 'completed';

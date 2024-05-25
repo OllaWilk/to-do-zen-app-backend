@@ -13,31 +13,31 @@ export class UserRecord implements UserEntity {
   public id?: string;
   public username?: string | null;
   public email: string;
-  private _password_hash: string;
+  private _password: string;
   public created_at?: Date;
 
   constructor(obj: UserEntity) {
-    const { id, username, email, password_hash } = obj;
+    const { id, username, email, password } = obj;
 
     this.id = id ?? uuid();
     this.username = username || null;
     this.email = email;
-    this.password_hash = password_hash;
+    this.password = password;
     this.created_at = new Date();
   }
 
-  get password_hash(): string {
-    return this._password_hash;
+  get password(): string {
+    return this._password;
   }
 
-  set password_hash(value: string) {
-    this._password_hash = value;
+  set password(value: string) {
+    this._password = value;
   }
 
   private validate(passwordErrorMessage: string) {
     const missingFields = [];
     if (!this.email) missingFields.push('email');
-    if (!this.password_hash) missingFields.push('password');
+    if (!this.password) missingFields.push('password');
 
     if (missingFields.length > 0) {
       throw new ValidationError(
@@ -50,7 +50,7 @@ export class UserRecord implements UserEntity {
     }
 
     if (
-      !validator.isStrongPassword(this.password_hash, {
+      !validator.isStrongPassword(this.password, {
         minLength: 8,
         minLowercase: 1,
         minUppercase: 1,
@@ -87,16 +87,16 @@ export class UserRecord implements UserEntity {
     );
 
     const salt = await bcrypt.genSalt(10);
-    const hash = await bcrypt.hash(this.password_hash, salt);
-    this._password_hash = hash;
+    const hash = await bcrypt.hash(this.password, salt);
+    this._password = hash;
 
     await pool.execute(
-      'INSERT INTO `users` (`id`, `username`, `email`, `password_hash`, `created_at`) VALUES (:id, :username, :email, :password_hash, :created_at)',
+      'INSERT INTO `users` (`id`, `username`, `email`, `password`, `created_at`) VALUES (:id, :username, :email, :password, :created_at)',
       {
         id: this.id,
         email: this.email,
         username: this.username,
-        password_hash: this.password_hash,
+        password: this.password,
         created_at: this.created_at,
       }
     );
@@ -121,7 +121,7 @@ export class UserRecord implements UserEntity {
     }
 
     const user = new UserRecord(results[0]);
-    const match = await bcrypt.compare(password, user.password_hash);
+    const match = await bcrypt.compare(password, user.password);
 
     if (!match) {
       throw new ValidationError('Incorrect email or password');

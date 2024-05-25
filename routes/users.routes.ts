@@ -36,7 +36,7 @@ usersRouter
       const user = new UserRecord({
         ...req.body,
         email,
-        password_hash: password,
+        password: password,
       });
 
       await user.signup();
