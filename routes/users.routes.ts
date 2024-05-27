@@ -25,7 +25,7 @@ usersRouter
   .post('/signup', async (req, res) => {
     try {
       const { email, password } = req.body;
-      const exists = await UserRecord.getOne(email);
+      const exists = await UserRecord.getOneByEmail(email);
 
       if (exists) {
         throw new ValidationError(
@@ -36,7 +36,7 @@ usersRouter
       const user = new UserRecord({
         ...req.body,
         email,
-        password_hash: password,
+        password: password,
       });
 
       await user.signup();

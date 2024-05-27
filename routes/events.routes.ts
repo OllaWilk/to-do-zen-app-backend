@@ -1,8 +1,12 @@
 import { Router } from 'express';
 import { EventRecord } from '../records/event.record';
 import { ValidationError } from '../utils/errors';
+import { requireAuth } from '../utils/requireAuth';
 
 export const eventsRouter = Router();
+
+//verify authentications
+eventsRouter.use(requireAuth);
 
 eventsRouter
   .get('/', async (req, res) => {

@@ -13,31 +13,31 @@ export class UserRecord implements UserEntity {
   public id?: string;
   public username?: string | null;
   public email: string;
-  private _password_hash: string;
+  private _password: string;
   public created_at?: Date;
 
   constructor(obj: UserEntity) {
-    const { id, username, email, password_hash } = obj;
+    const { id, username, email, password } = obj;
 
     this.id = id ?? uuid();
     this.username = username || null;
     this.email = email;
-    this.password_hash = password_hash;
+    this.password = password;
     this.created_at = new Date();
   }
 
-  get password_hash(): string {
-    return this._password_hash;
+  get password(): string {
+    return this._password;
   }
 
-  set password_hash(value: string) {
-    this._password_hash = value;
+  set password(value: string) {
+    this._password = value;
   }
 
   private validate(passwordErrorMessage: string) {
     const missingFields = [];
     if (!this.email) missingFields.push('email');
-    if (!this.password_hash) missingFields.push('password');
+    if (!this.password) missingFields.push('password');
 
     if (missingFields.length > 0) {
       throw new ValidationError(
@@ -50,7 +50,7 @@ export class UserRecord implements UserEntity {
     }
 
     if (
-      !validator.isStrongPassword(this.password_hash, {
+      !validator.isStrongPassword(this.password, {
         minLength: 8,
         minLowercase: 1,
         minUppercase: 1,
@@ -71,7 +71,7 @@ export class UserRecord implements UserEntity {
     return users.map((obj) => new UserRecord(obj));
   }
 
-  static async getOne(email: string): Promise<UserEntity | null> {
+  static async getOneByEmail(email?: string): Promise<UserEntity | null> {
     const [results] = (await pool.execute(
       'SELECT * FROM `users` WHERE `email` = :email',
       {
@@ -81,22 +81,32 @@ export class UserRecord implements UserEntity {
     return results.length === 0 ? null : new UserRecord(results[0]);
   }
 
+  static async getOneById(id?: string): Promise<UserEntity | null> {
+    const [results] = (await pool.execute(
+      'SELECT * FROM `users` WHERE `id` = :id',
+      {
+        id,
+      }
+    )) as UserRecordResults;
+    return results.length === 0 ? null : new UserRecord(results[0]);
+  }
+
   async signup(): Promise<void> {
     this.validate(
-      'Password not strong enough. It should contain at least one uppercase letter, one lowercase letter, one number, one special character, and be a maximum of 8 characters long.'
+      'Your password needs to be stronger. Please include at least one uppercase letter, one lowercase letter, one number, one special character, and ensure it is exactly 8 characters long.'
     );
 
     const salt = await bcrypt.genSalt(10);
-    const hash = await bcrypt.hash(this.password_hash, salt);
-    this._password_hash = hash;
+    const hash = await bcrypt.hash(this.password, salt);
+    this._password = hash;
 
     await pool.execute(
-      'INSERT INTO `users` (`id`, `username`, `email`, `password_hash`, `created_at`) VALUES (:id, :username, :email, :password_hash, :created_at)',
+      'INSERT INTO `users` (`id`, `username`, `email`, `password`, `created_at`) VALUES (:id, :username, :email, :password, :created_at)',
       {
         id: this.id,
         email: this.email,
         username: this.username,
-        password_hash: this.password_hash,
+        password: this.password,
         created_at: this.created_at,
       }
     );
@@ -121,7 +131,7 @@ export class UserRecord implements UserEntity {
     }
 
     const user = new UserRecord(results[0]);
-    const match = await bcrypt.compare(password, user.password_hash);
+    const match = await bcrypt.compare(password, user.password);
 
     if (!match) {
       throw new ValidationError('Incorrect email or password');

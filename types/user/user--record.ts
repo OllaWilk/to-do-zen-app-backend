@@ -1,7 +1,10 @@
-export interface UserEntity {
+export interface UserEntity extends UserEntityForm {
   id?: string;
+  created_at?: Date;
+}
+
+export interface UserEntityForm {
   username?: string | null;
   email: string;
-  created_at?: Date;
-  password_hash: string;
+  password: string;
 }
