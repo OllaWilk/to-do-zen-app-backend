@@ -71,7 +71,7 @@ export class UserRecord implements UserEntity {
     return users.map((obj) => new UserRecord(obj));
   }
 
-  static async getOne(email: string): Promise<UserEntity | null> {
+  static async getOneByEmail(email?: string): Promise<UserEntity | null> {
     const [results] = (await pool.execute(
       'SELECT * FROM `users` WHERE `email` = :email',
       {
@@ -81,9 +81,19 @@ export class UserRecord implements UserEntity {
     return results.length === 0 ? null : new UserRecord(results[0]);
   }
 
+  static async getOneById(id?: string): Promise<UserEntity | null> {
+    const [results] = (await pool.execute(
+      'SELECT * FROM `users` WHERE `id` = :id',
+      {
+        id,
+      }
+    )) as UserRecordResults;
+    return results.length === 0 ? null : new UserRecord(results[0]);
+  }
+
   async signup(): Promise<void> {
     this.validate(
-      'Password not strong enough. It should contain at least one uppercase letter, one lowercase letter, one number, one special character, and be a maximum of 8 characters long.'
+      'Your password needs to be stronger. Please include at least one uppercase letter, one lowercase letter, one number, one special character, and ensure it is exactly 8 characters long.'
     );
 
     const salt = await bcrypt.genSalt(10);

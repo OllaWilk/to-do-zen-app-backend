@@ -2,7 +2,6 @@ import express, { json } from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import methodOverride from 'method-override';
-
 import { urlencoded } from 'express';
 import 'express-async-errors';
 import { handleError } from './utils/errors';
