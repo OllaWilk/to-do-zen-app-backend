@@ -33,7 +33,6 @@ export const requireAuth = async (
 
     req.user = user;
 
-    console.log(req.user);
     next();
   } catch (err) {
     console.log(err);
