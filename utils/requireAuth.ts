@@ -35,7 +35,6 @@ export const requireAuth = async (
 
     next();
   } catch (err) {
-    console.log(err);
     res.status(401).json({ error: 'Request is not authorized' });
   }
 };
