@@ -1,18 +1,19 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { UserRecord } from '../records/user.record';
-import { UserEntity } from '../types';
+import { UserCustomRequest, UserEntity } from '../types';
 
 interface CustomRequest extends Request {
   user: UserEntity;
 }
 
 export const requireAuth = async (
-  req: CustomRequest,
+  req: CustomRequest | UserCustomRequest,
   res: Response,
   next: NextFunction
 ) => {
   const { authorization } = req.headers;
+
   if (!authorization) {
     return res.status(401).json({ error: 'Authorization token required' });
   }

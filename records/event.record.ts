@@ -2,19 +2,21 @@ import { FieldPacket } from 'mysql2';
 import validator from 'validator';
 import { v4 as uuid } from 'uuid';
 import { ValidationError } from '../utils/errors';
-import { EventEntity } from '../types';
+import { EventEntity, EventStatus } from '../types';
 import { pool } from '../utils/db';
 
 type EventRecordResults = [EventRecord[], FieldPacket[]];
 
 export class EventRecord implements EventEntity {
-  public id: string;
+  // Defining the properties of the class
+  public readonly id: string;
+  public readonly created_at: Date;
   public title: string;
-  public created_at: Date;
-  public price?: number | null;
-  public date?: Date | null;
-  public status: 'planed' | 'ongoing' | 'completed';
+  public price: number | null;
+  public event_date?: Date | null;
+  public status: EventStatus;
   public description: string;
+  public url?: string;
   public lat?: number | null;
   public lon?: number | null;
   public category: string;
@@ -22,14 +24,16 @@ export class EventRecord implements EventEntity {
   public reminder?: number | null;
   public creator_id: string;
 
+  // Constructor to initialize the properties
   constructor(obj: EventEntity) {
     const {
       id,
       title,
       price,
-      date,
+      event_date,
       status,
       description,
+      url,
       lat,
       lon,
       category,
@@ -38,21 +42,23 @@ export class EventRecord implements EventEntity {
       creator_id,
     } = obj;
 
-    this.id = id ?? uuid();
-    this.title = title;
-    this.created_at = new Date();
-    this.price = price ?? 0;
-    this.date = date ?? new Date();
-    this.status = status;
-    this.description = description;
-    this.lat = lat;
-    this.lon = lon;
-    this.category = category;
-    this.duration = duration;
-    this.reminder = reminder;
-    this.creator_id = creator_id;
+    this.id = id ?? uuid(); // Generate UUID if id is not provided
+    this.created_at = new Date(); // Set current date as creation date
+    this.title = title ?? ''; // Default to empty string if not provided
+    this.price = price ?? 0; // Default price to 0 if not provided
+    this.event_date = event_date ?? new Date(); // Set current date as event date if not provided
+    this.status = status ?? 'planned'; // Default status to 'planned' if not provided
+    this.description = description ?? ''; // Default to empty string if not provided
+    this.url = url ?? ''; // Default url to an empty string if not provided
+    this.lat = lat ?? null;
+    this.lon = lon ?? null;
+    this.category = category ?? ''; // Default to empty string if not provided
+    this.duration = duration ?? ''; // Default to empty string if not provided
+    this.reminder = reminder ?? null;
+    this.creator_id = creator_id ?? ''; // Default to empty string if not provided
   }
 
+  // Method to validate the fields
   private validate() {
     const missingFields = [];
     if (!this.title) missingFields.push('title');
@@ -67,15 +73,11 @@ export class EventRecord implements EventEntity {
       );
     }
 
-    if (!validator.isLength(this.title, { min: 2, max: 255 })) {
+    if (!validator.isLength(this.title, { min: 3, max: 255 })) {
       const characters = this.title.length;
       throw new ValidationError(
-        `Title must be between 3 and 100 characters. Now you have ${characters} characters`
+        `Title must be between 3 and 255 characters. Currently, it has ${characters} characters.`
       );
-    }
-
-    if (this.date && !validator.isISO8601(this.date.toString())) {
-      throw new ValidationError('Date must be a valid ISO8601 date string.');
     }
 
     if (!validator.isIn(this.status, ['planed', 'ongoing', 'completed'])) {
@@ -86,14 +88,19 @@ export class EventRecord implements EventEntity {
     }
   }
 
-  static async getAll(): Promise<EventRecord[]> {
+  // Static method to get all events by user ID
+  static async getAll(user_id: string): Promise<EventRecord[]> {
     const [results] = (await pool.execute(
-      'SELECT * FROM `events`'
+      'SELECT * FROM `events` WHERE `creator_id` = :user_id',
+      {
+        user_id,
+      }
     )) as EventRecordResults;
 
     return results.map((obj) => new EventRecord(obj));
   }
 
+  // Static method to get a single event by its ID
   static async getOne(id: string): Promise<EventRecord | null> {
     const [results] = (await pool.execute(
       'SELECT * FROM `events` WHERE `id` = :id',
@@ -105,19 +112,21 @@ export class EventRecord implements EventEntity {
     return results.length === 0 ? null : new EventRecord(results[0]);
   }
 
+  // Method to insert a new event into the database
   async insert(): Promise<void> {
-    this.validate();
+    this.validate(); // Validate the event before insertion
 
     await pool.execute(
-      'INSERT INTO `events` (`id`, `created_at`, `title`, `price`, `date`, `status`, `description`, `lat`, `lon`, `category`, `duration`, `reminder`, `creator_id`) VALUES (:id, :created_at, :title,  :price, :date, :status , :description , :lat, :lon , :category, :duration, :reminder, :creator_id)',
+      'INSERT INTO `events` (`id`, `created_at`, `title`, `price`, `event_date`, `status`, `description`, `url`, `lat`, `lon`, `category`, `duration`, `reminder`, `creator_id`) VALUES (:id, :created_at, :title,  :price, :event_date, :status , :description , :url, :lat, :lon , :category, :duration, :reminder, :creator_id)',
       {
         id: this.id,
         created_at: this.created_at,
         title: this.title,
         price: this.price,
-        date: this.date,
+        event_date: this.event_date,
         status: this.status,
         description: this.description,
+        url: this.url,
         lat: this.lat,
         lon: this.lon,
         category: this.category,
@@ -128,12 +137,13 @@ export class EventRecord implements EventEntity {
     );
   }
 
+  // Method to update an existing event
   async update(
     updatedEventData: Omit<EventEntity, 'id' | 'creator_id'>
   ): Promise<void> {
-    this.validate();
+    this.validate(); // Validate the event before updating
     await pool.execute(
-      'UPDATE `events` SET `created_at` = :created_at, `title` = :title ,  `price` = :price, `date` = :date, `status` = :status,  `description` = :description , `lat` = :lat, `lon` = :lon,  `category` = :category , `duration` = :duration , `reminder` = :reminder  WHERE `id` = :id',
+      'UPDATE `events` SET `created_at` = :created_at, `title` = :title ,  `price` = :price, `event_date` = :event_date, `status` = :status,  `description` = :description , `url` = :url, `lat` = :lat, `lon` = :lon,  `category` = :category , `duration` = :duration , `reminder` = :reminder  WHERE `id` = :id',
       {
         id: this.id,
         creator_id: this.creator_id,
@@ -142,6 +152,7 @@ export class EventRecord implements EventEntity {
     );
   }
 
+  // Method to delete an event
   async delete(): Promise<void> {
     await pool.execute(' DELETE FROM `events` WHERE `id` = :id', {
       id: this.id,

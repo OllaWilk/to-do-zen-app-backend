@@ -1,3 +1,5 @@
+import { Request } from 'express';
+
 export interface UserToken {
   token?: string;
 }
@@ -14,3 +16,7 @@ export interface UserEntityForm {
 }
 
 export interface CompleteUserEntity extends UserEntity, UserToken {}
+
+export interface UserCustomRequest extends Request {
+  user?: UserEntity;
+}

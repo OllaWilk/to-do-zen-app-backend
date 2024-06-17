@@ -1,18 +1,20 @@
+export type EventStatus = 'planned' | 'ongoing' | 'completed';
+
 export interface NewEventEntity
   extends Omit<EventEntity, 'id' | 'created_at'> {}
 
 export interface EventSimpleEntity {
-  id: string;
+  readonly id: string;
+  readonly created_at: Date;
   title: string;
-  status: 'planed' | 'ongoing' | 'completed';
-  created_at: Date;
+  status: EventStatus;
   price?: number | null;
-  date?: Date | null;
+  event_date?: Date | null;
   description?: string;
 }
 
 export interface EventEntity extends EventSimpleEntity {
-  // url?: string;
+  url?: string;
   lat?: number | null;
   lon?: number | null;
   category: string;
