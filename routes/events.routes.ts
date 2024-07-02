@@ -75,7 +75,6 @@ eventsRouter
         duration: req.body.duration,
         reminder: Number(req.body.reminder),
       };
-      console.log(req.body);
       await event.update(updatedEventData);
       res.json(updatedEventData);
     } catch (error) {
