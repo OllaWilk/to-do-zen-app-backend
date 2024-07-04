@@ -22,3 +22,7 @@ export interface EventEntity extends EventSimpleEntity {
   reminder?: number | null;
   creator_id: string;
 }
+
+export interface EventTitleSearch {
+  title: string;
+}

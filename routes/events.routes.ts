@@ -20,6 +20,15 @@ eventsRouter
       res.status(500).json({ error: error.message });
     }
   })
+  .get('/search/:title?', async (req: UserCustomRequest, res) => {
+    try {
+      const user_id = req.user.id;
+      const search = await EventRecord.getAll(user_id, req.params.title);
+      res.json(search);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  })
   // Route to get a single event by its ID
   .get('/:id', async (req, res) => {
     try {

@@ -88,14 +88,22 @@ export class EventRecord implements EventEntity {
     }
   }
 
-  // Static method to get all events by user ID
-  static async getAll(user_id: string): Promise<EventRecord[]> {
-    const [results] = (await pool.execute(
-      'SELECT * FROM `events` WHERE `creator_id` = :user_id',
-      {
-        user_id,
-      }
-    )) as EventRecordResults;
+  // Static method to get all events by user ID,  optionally filtered by title
+  static async getAll(user_id: string, title?: string): Promise<EventRecord[]> {
+    let query = 'SELECT * FROM `events` WHERE 1=1';
+    const params: { [key: string]: string } = {};
+
+    if (user_id) {
+      query += ' AND `creator_id` = :user_id';
+      params.user_id = user_id;
+    }
+
+    if (title) {
+      query += ' AND `title` LIKE :search';
+      params.search = `%${title}%`;
+    }
+
+    const [results] = (await pool.execute(query, params)) as EventRecordResults;
 
     return results.map((obj) => new EventRecord(obj));
   }
