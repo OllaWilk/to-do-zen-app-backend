@@ -11,12 +11,12 @@ export interface EventSimpleEntity {
   price?: number | null;
   event_date?: Date | null;
   description?: string;
+  lat?: number | null;
+  lon?: number | null;
 }
 
 export interface EventEntity extends EventSimpleEntity {
   url?: string;
-  lat?: number | null;
-  lon?: number | null;
   category: string;
   duration?: string;
   reminder?: number | null;

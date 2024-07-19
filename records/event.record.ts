@@ -108,6 +108,30 @@ export class EventRecord implements EventEntity {
     return results.map((obj) => new EventRecord(obj));
   }
 
+  static async sortBy(
+    user_id: string,
+    column: string,
+    order: 'ASC' | 'DESC' = 'ASC'
+  ): Promise<EventRecord[]> {
+    const validColums = ['title', 'status', 'price', 'event_date'];
+
+    if (!validColums.includes(column)) {
+      throw new ValidationError(`Invalid column name: ${column}`);
+    }
+
+    if (order !== 'ASC' && order !== 'DESC') {
+      throw new ValidationError(`Invalid order: ${order}`);
+    }
+
+    const query = `SELECT * FROM \`events\` WHERE \`creator_id\` = :id ORDER BY \`${column}\` ${order}`;
+
+    const [result] = (await pool.execute(query, {
+      id: user_id,
+    })) as EventRecordResults;
+
+    return result.map((obj) => new EventRecord(obj));
+  }
+
   // Static method to get a single event by its ID
   static async getOne(id: string): Promise<EventRecord | null> {
     const [results] = (await pool.execute(

@@ -29,6 +29,21 @@ eventsRouter
       res.status(500).json({ error: error.message });
     }
   })
+  .get('/sort/:column/:order', async (req: UserCustomRequest, res) => {
+    try {
+      const user_id = req.user.id;
+      const { column, order } = req.params;
+
+      const sort = await EventRecord.sortBy(
+        user_id,
+        column,
+        order.toUpperCase() as 'ASC' | 'DESC'
+      );
+      res.json(sort);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  })
   // Route to get a single event by its ID
   .get('/:id', async (req, res) => {
     try {
