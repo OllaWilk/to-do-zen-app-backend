@@ -8,6 +8,7 @@ import { rateLimit } from 'express-rate-limit';
 import { handleError } from './utils/errors';
 import { eventsRouter } from './routes/events.routes';
 import { usersRouter } from './routes/users.routes';
+import { eventsPhotos } from './routes/eventsPhotos.routers';
 
 const app = express();
 dotenv.config();
@@ -31,6 +32,7 @@ app.use(urlencoded({ extended: true }));
 
 app.use('/events', eventsRouter);
 app.use('/user', usersRouter);
+app.use('/event/photos', eventsPhotos);
 app.use(handleError);
 
 const PORT = parseInt(process.env.PORT || '3001', 10);
