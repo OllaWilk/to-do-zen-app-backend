@@ -4,6 +4,8 @@ import { Dropbox } from 'dropbox';
 import { EventPhotoRecord } from '../records/eventPhoto.record';
 import { ValidationError } from '../utils/errors';
 import { refreshAccessToken } from '../utils/refreshAccessTokenDbx';
+import { uploadFileToDropbox } from '../utils/uploadFileToDropbox';
+import { generateDirectDownloadLink } from '../utils/generateDirectDownloadLink';
 
 export const eventsPhotos = Router();
 
@@ -38,21 +40,33 @@ eventsPhotos
       const accessToken = await refreshAccessToken();
 
       // Initialize Dropbox client with the new token
-      const dbx = new Dropbox({
-        accessToken,
-        fetch,
-      });
+      const dbx = new Dropbox({ accessToken, fetch });
 
       // Upload the file to Dropbox
-      const response = await dbx.filesUpload({
-        path: '/' + req.file.originalname, // The path where the file will be saved in Dropbox
-        contents: req.file.buffer, // File content
+      const uploadResponse = await uploadFileToDropbox(dbx, req.file);
+
+      // Generate a direct download link
+      const directDownloadLink = await generateDirectDownloadLink(
+        dbx,
+        uploadResponse
+      );
+
+      //  Save photo metadata to the database
+      const photo = new EventPhotoRecord({
+        photo_id: uploadResponse.id,
+        event_id: req.body.event_id,
+        photo_url: directDownloadLink,
+        photo_title: uploadResponse.name,
+        photo_description: req.body.description,
       });
 
-      console.log('File uploaded successfully:', response);
-      res.status(200).send('Files uploaded to Dropbox');
+      await photo.insert();
+      res.status(201).json(photo);
+      return photo;
     } catch (error) {
-      console.error(error);
-      res.status(500).send('Error with sending to Dropbox');
+      console.error('Error during file upload or database operation:', error);
+      res
+        .status(500)
+        .send('An error occurred while uploading the file or saving metadata.');
     }
   });

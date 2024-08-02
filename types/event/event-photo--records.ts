@@ -3,4 +3,5 @@ export interface EventPhoto {
   event_id: string;
   photo_url: string;
   photo_title: string;
+  photo_description: string | null;
 }

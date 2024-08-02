@@ -10,14 +10,17 @@ export class EventPhotoRecord implements EventPhoto {
   public event_id: string;
   public photo_url: string;
   public photo_title: string;
+  public photo_description: string | null;
 
   constructor(obj: EventPhoto) {
-    const { photo_id, event_id, photo_url, photo_title } = obj;
+    const { photo_id, event_id, photo_url, photo_title, photo_description } =
+      obj;
 
     this.photo_id = photo_id ?? uuid();
     this.event_id = event_id;
     this.photo_url = photo_url;
     this.photo_title = photo_title;
+    this.photo_description = photo_description;
   }
 
   static async getAll(event_id: string): Promise<EventPhoto[]> {
@@ -29,5 +32,19 @@ export class EventPhotoRecord implements EventPhoto {
     )) as EventPhotoResults;
 
     return photos.map((obj) => new EventPhotoRecord(obj));
+  }
+
+  async insert(): Promise<void> {
+    await pool.execute(
+      'INSERT INTO `photos` (`photo_id`, `event_id`, `photo_url`, `photo_title`, `photo_description`) VALUES (:photo_id, :event_id, :photo_url,  :photo_title, :photo_description)',
+      {
+        photo_id: this.photo_id,
+        event_id: this.event_id,
+        photo_url: this.photo_url,
+        photo_title: this.photo_title,
+        photo_description: this.photo_description,
+      }
+    );
+    return;
   }
 }
