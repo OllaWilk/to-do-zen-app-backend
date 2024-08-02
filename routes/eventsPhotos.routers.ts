@@ -14,9 +14,9 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
 eventsPhotos
-  .get('/', async (req, res) => {
+  .get('/delete/:event_id', async (req, res) => {
     try {
-      const { event_id } = req.body;
+      const { event_id } = req.params;
       const photos = await EventPhotoRecord.getAll(event_id);
 
       if (!photos) {
