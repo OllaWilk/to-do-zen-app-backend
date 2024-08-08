@@ -80,8 +80,8 @@ export class EventRecord implements EventEntity {
       );
     }
 
-    if (!validator.isIn(this.status, ['planed', 'ongoing', 'completed'])) {
-      throw new Error('Status must be one of: planed, ongoing, completed.');
+    if (!validator.isIn(this.status, ['planned', 'ongoing', 'completed'])) {
+      throw new Error('Status must be one of: planned, ongoing, completed.');
     }
     if (!validator.isLength(this.description, { min: 2, max: 1000 })) {
       throw new Error('Description must be between 3 and 1000 characters.');

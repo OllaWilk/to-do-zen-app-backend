@@ -34,6 +34,17 @@ export class EventPhotoRecord implements EventPhoto {
     return photos.map((obj) => new EventPhotoRecord(obj));
   }
 
+  static async getOne(photo_id: string): Promise<EventPhotoRecord | null> {
+    const [result] = (await pool.execute(
+      'SELECT * FROM `photos` WHERE `photo_id` = :photo_id',
+      {
+        photo_id: photo_id,
+      }
+    )) as EventPhotoResults;
+
+    return result.length === 0 ? null : new EventPhotoRecord(result[0]);
+  }
+
   async insert(): Promise<void> {
     await pool.execute(
       'INSERT INTO `photos` (`photo_id`, `event_id`, `photo_url`, `photo_title`, `photo_description`) VALUES (:photo_id, :event_id, :photo_url,  :photo_title, :photo_description)',
@@ -46,5 +57,11 @@ export class EventPhotoRecord implements EventPhoto {
       }
     );
     return;
+  }
+
+  async delete(): Promise<void> {
+    await pool.execute(' DELETE FROM `photos` WHERE `photo_id` = :photo_id', {
+      photo_id: this.photo_id,
+    });
   }
 }
