@@ -8,7 +8,7 @@ export async function validatePhoto(file: Express.Multer.File): Promise<void> {
   const maxSize = 2 * 1024 * 1024;
   // Maximum allowed dimensions for the image (800x600 pixels)
   const maxWidth = 800;
-  const maxHeight = 600;
+  const maxHeight = 800;
 
   // Check if the file format is allowed
   if (!allowedMimeTypes.includes(file.mimetype)) {

@@ -1,9 +1,11 @@
 import { FieldPacket } from 'mysql2';
 import validator from 'validator';
 import { v4 as uuid } from 'uuid';
-import { ValidationError } from '../utils/errors';
 import { EventEntity, EventStatus } from '../types';
+import { ValidationError } from '../utils/errors';
 import { pool } from '../utils/db';
+import { EventPhotoRecord } from './eventPhoto.record';
+import { deletePhotoFromDropbox } from './dropbox';
 
 type EventRecordResults = [EventRecord[], FieldPacket[]];
 
@@ -186,7 +188,15 @@ export class EventRecord implements EventEntity {
 
   // Method to delete an event
   async delete(): Promise<void> {
-    await pool.execute(' DELETE FROM `events` WHERE `id` = :id', {
+    //get all photos linked to the event
+    const photos = await EventPhotoRecord.getAll(this.id);
+
+    //delete all photos from dropbox
+    for (const photo of photos) {
+      await deletePhotoFromDropbox(photo.photo_id);
+    }
+
+    await pool.execute('DELETE FROM `events` WHERE `id` = :id', {
       id: this.id,
     });
   }

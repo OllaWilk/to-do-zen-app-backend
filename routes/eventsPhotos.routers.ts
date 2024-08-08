@@ -7,6 +7,7 @@ import {
   refreshAccessToken,
   uploadFileToDropbox,
   validatePhoto,
+  deletePhotoFromDropbox,
 } from '../records/dropbox';
 import { ValidationError } from '../utils/errors';
 
@@ -99,17 +100,7 @@ eventsPhotos
       await databasePhoto.delete();
 
       /* Delete photo from Dropbox */
-      const accessToken = await refreshAccessToken();
-      const dbx = new Dropbox({ accessToken, fetch });
-
-      // Delete the file from Dropbox
-      const response = await dbx.filesDeleteV2({
-        path: photo_id,
-      });
-
-      if (!response) {
-        throw new ValidationError('Failed to delete photo');
-      }
+      await deletePhotoFromDropbox(photo_id);
 
       res.status(200).json({
         message: 'Photo deleted successfully from database and Dropbox',
