@@ -1,5 +1,6 @@
 import sharp from 'sharp';
 import { ValidationError } from '../../utils/errors';
+import { checkDropboxSpaceUsage } from './checkDropboxSpaceUsage';
 
 export async function validatePhoto(file: Express.Multer.File): Promise<void> {
   // Allowed file formats (mime types)
@@ -9,6 +10,8 @@ export async function validatePhoto(file: Express.Multer.File): Promise<void> {
   // Maximum allowed dimensions for the image (800x600 pixels)
   const maxWidth = 800;
   const maxHeight = 800;
+
+  await checkDropboxSpaceUsage();
 
   // Check if the file format is allowed
   if (!allowedMimeTypes.includes(file.mimetype)) {
