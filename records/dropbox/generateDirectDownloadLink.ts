@@ -1,8 +1,6 @@
 import { Dropbox, files } from 'dropbox';
 
-/**
- * Generates a direct download link by modifying the shared link.
- */
+/** Generates a direct download link by modifying the shared link.*/
 export async function generateDirectDownloadLink(
   dbx: Dropbox,
   uploadResponse: files.FileMetadata

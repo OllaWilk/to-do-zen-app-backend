@@ -2,10 +2,13 @@ import { Router } from 'express';
 import multer from 'multer';
 import { Dropbox, DropboxResponseError } from 'dropbox';
 import { EventPhotoRecord } from '../records/eventPhoto.record';
+import {
+  generateDirectDownloadLink,
+  refreshAccessToken,
+  uploadFileToDropbox,
+  validatePhoto,
+} from '../records/dropbox';
 import { ValidationError } from '../utils/errors';
-import { refreshAccessToken } from '../utils/refreshAccessTokenDbx';
-import { uploadFileToDropbox } from '../utils/uploadFileToDropbox';
-import { generateDirectDownloadLink } from '../utils/generateDirectDownloadLink';
 
 export const eventsPhotos = Router();
 
@@ -36,6 +39,9 @@ eventsPhotos
     }
 
     try {
+      // Validate the photo before proceeding
+      await validatePhoto(req.file);
+
       // Refresh the access token
       const accessToken = await refreshAccessToken();
 
@@ -64,10 +70,18 @@ eventsPhotos
       res.status(201).json(photo);
       return photo;
     } catch (error) {
-      console.error('Error during file upload or database operation:', error);
-      res
-        .status(500)
-        .send('An error occurred while uploading the file or saving metadata.');
+      console.error(
+        'Error during file upload or database operation:',
+        error.message
+      );
+
+      if (error instanceof ValidationError) {
+        return res.status(400).json({ message: error.message });
+      } else {
+        return res.status(500).json({
+          message: 'An error occurred during the operation. Please try again.',
+        });
+      }
     }
   })
 

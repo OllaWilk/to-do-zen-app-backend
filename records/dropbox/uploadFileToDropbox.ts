@@ -1,8 +1,7 @@
 import { Dropbox } from 'dropbox';
 
-/**
- * Uploads the file to Dropbox and returns the upload response.
- */
+/** Uploads the file to Dropbox and returns the upload response.*/
+
 export async function uploadFileToDropbox(
   dbx: Dropbox,
   file: Express.Multer.File
