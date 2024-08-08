@@ -43,6 +43,9 @@ eventsPhotos
       // Validate the photo before proceeding
       await validatePhoto(req.file);
 
+      // Validate if the event already has the maximum number of photos
+      await EventPhotoRecord.validateMaxPhotos(req.body.event_id);
+
       // Refresh the access token
       const accessToken = await refreshAccessToken();
 

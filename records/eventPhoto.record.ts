@@ -2,6 +2,7 @@ import { v4 as uuid } from 'uuid';
 import { FieldPacket } from 'mysql2';
 import { EventPhoto } from '../types';
 import { pool } from '../utils/db';
+import { ValidationError } from '../utils/errors';
 
 type EventPhotoResults = [EventPhoto[], FieldPacket[]];
 
@@ -63,5 +64,15 @@ export class EventPhotoRecord implements EventPhoto {
     await pool.execute(' DELETE FROM `photos` WHERE `photo_id` = :photo_id', {
       photo_id: this.photo_id,
     });
+  }
+
+  static async validateMaxPhotos(
+    event_id: Pick<EventPhoto, 'event_id'>
+  ): Promise<void> {
+    const photo = await this.getAll(event_id + '');
+
+    if (photo.length >= 5) {
+      throw new ValidationError('An event can have a maximum of 5 photos');
+    }
   }
 }
