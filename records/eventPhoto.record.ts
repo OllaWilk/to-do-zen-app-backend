@@ -1,6 +1,7 @@
 import { v4 as uuid } from 'uuid';
 import { FieldPacket } from 'mysql2';
 import { EventPhoto } from '../types';
+import validator from 'validator';
 import { pool } from '../utils/db';
 import { ValidationError } from '../utils/errors';
 
@@ -22,6 +23,37 @@ export class EventPhotoRecord implements EventPhoto {
     this.photo_url = photo_url;
     this.photo_title = photo_title;
     this.photo_description = photo_description;
+
+    this.validate();
+  }
+
+  private validate() {
+    const missingFields = [];
+
+    if (!this.event_id) missingFields.push('event_id');
+    if (!this.photo_url) missingFields.push('photo_url');
+
+    if (missingFields.length > 0) {
+      throw new ValidationError(
+        `The following fields cannot be empty: ${missingFields.join(', ')}.`
+      );
+    }
+
+    if (!validator.isLength(this.photo_title, { min: 0, max: 100 })) {
+      const characters = this.photo_title.length;
+      throw new ValidationError(
+        `Photo title must be between 3 and 255 characters. Currently, it has ${characters} characters.`
+      );
+    }
+
+    if (
+      this.photo_description &&
+      !validator.isLength(this.photo_description, { min: 0, max: 250 })
+    ) {
+      throw new ValidationError(
+        'Photo description must be between 2 and 1000 characters.'
+      );
+    }
   }
 
   static async getAll(event_id: string): Promise<EventPhoto[]> {
