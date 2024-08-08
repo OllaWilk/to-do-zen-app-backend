@@ -115,6 +115,9 @@ eventsRouter
       }
 
       await event.delete();
+      res.json({
+        message: 'Event and associated photos deleted successfully.',
+      });
       res.json(event);
     } catch (error) {
       res.status(404).json({ error: error.message });
