@@ -27,9 +27,27 @@ export class EventRecord implements EventEntity {
   public creator_id: string;
 
   // Constructor to initialize the properties
-  constructor(obj: EventEntity) {
+  constructor(eventData: EventEntity) {
     const {
+      id = uuid(),
+      created_at = new Date(),
+      title = '',
+      price = 0,
+      event_date = new Date(),
+      status = 'planned',
+      description = '',
+      url = '',
+      lat = null,
+      lon = null,
+      category = '',
+      duration = '',
+      reminder = null,
+      creator_id = '',
+    } = eventData;
+
+    Object.assign(this, {
       id,
+      created_at,
       title,
       price,
       event_date,
@@ -42,22 +60,7 @@ export class EventRecord implements EventEntity {
       duration,
       reminder,
       creator_id,
-    } = obj;
-
-    this.id = id ?? uuid(); // Generate UUID if id is not provided
-    this.created_at = new Date(); // Set current date as creation date
-    this.title = title ?? ''; // Default to empty string if not provided
-    this.price = price ?? 0; // Default price to 0 if not provided
-    this.event_date = event_date ?? new Date(); // Set current date as event date if not provided
-    this.status = status ?? 'planned'; // Default status to 'planned' if not provided
-    this.description = description ?? ''; // Default to empty string if not provided
-    this.url = url ?? ''; // Default url to an empty string if not provided
-    this.lat = lat ?? null;
-    this.lon = lon ?? null;
-    this.category = category ?? ''; // Default to empty string if not provided
-    this.duration = duration ?? ''; // Default to empty string if not provided
-    this.reminder = reminder ?? null;
-    this.creator_id = creator_id ?? ''; // Default to empty string if not provided
+    });
   }
 
   // Method to validate the fields
