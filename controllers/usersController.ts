@@ -40,6 +40,8 @@ export const loginUser = async (req: Request, res: Response) => {
     const { email, password } = req.body;
     const user = await UserRecord.login(email, password);
     const token = createToken(user.id, '3d');
+
+    /* Create cookie */
     res.status(200).json({ user, token });
   } catch (error) {
     res.status(400).json({ error: error.message });
