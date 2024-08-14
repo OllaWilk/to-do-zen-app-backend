@@ -57,10 +57,6 @@ export const loginUser = async (req: Request, res: Response) => {
       maxAge: 3 * 24 * 60 * 60 * 1000, // 3 days
     });
 
-    console.log('USER', user);
-    console.log('TOKEN', token);
-    console.log('COOKIE', res.cookie);
-
     res.status(200).json({ user, token });
   } catch (error) {
     res.status(400).json({ error: error.message });
