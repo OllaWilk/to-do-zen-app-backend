@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Request, Response, Router } from 'express';
 import {
   getAllUsers,
   loginUser,
@@ -6,12 +6,20 @@ import {
   signupUser,
 } from '../controllers/usersController';
 import { requireAuth } from '../utils/requireAuth';
+import { UserEntity } from '../types';
+
+interface CustomRequest extends Request {
+  user?: UserEntity;
+}
 
 export const usersRouter = Router();
 
 usersRouter
   // Apply the requireAuth middleware only to the GET / route
   .get('/', requireAuth, getAllUsers)
+  .get('/me', requireAuth, (req: CustomRequest, res) => {
+    res.json(req.user);
+  })
 
   // Routes without authentication
   .post('/login', loginUser)
