@@ -1,8 +1,5 @@
 import { Router } from 'express';
-import { EventRecord } from '../records/event.record';
-import { ValidationError } from '../utils/errors';
 import { requireAuth } from '../utils/requireAuth';
-import { UserCustomRequest } from '../types';
 import {
   createEvent,
   deleteEvent,

@@ -9,9 +9,12 @@ import {
   validatePhoto,
   deletePhotoFromDropbox,
 } from '../records/dropbox';
+import { requireAuth } from '../utils/requireAuth';
 import { ValidationError } from '../utils/errors';
 
 export const eventsPhotos = Router();
+
+eventsPhotos.use(requireAuth);
 
 // Multer configuration for file upload
 const storage = multer.memoryStorage();

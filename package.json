@@ -13,6 +13,7 @@
   "license": "ISC",
   "dependencies": {
     "@types/bcrypt": "^5.0.2",
+    "@types/cookie-parser": "^1.4.7",
     "@types/jsonwebtoken": "^9.0.6",
     "@types/method-override": "^0.0.35",
     "@types/validator": "^13.11.10",

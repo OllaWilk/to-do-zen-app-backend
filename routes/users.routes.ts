@@ -2,13 +2,18 @@ import { Router } from 'express';
 import {
   getAllUsers,
   loginUser,
+  logoutUser,
   signupUser,
 } from '../controllers/usersController';
+import { requireAuth } from '../utils/requireAuth';
 
 export const usersRouter = Router();
 
 usersRouter
-  .get('/', getAllUsers)
-  .post('/login', loginUser)
+  // Apply the requireAuth middleware only to the GET / route
+  .get('/', requireAuth, getAllUsers)
 
-  .post('/signup', signupUser);
+  // Routes without authentication
+  .post('/login', loginUser)
+  .post('/signup', signupUser)
+  .post('/logout', logoutUser);
