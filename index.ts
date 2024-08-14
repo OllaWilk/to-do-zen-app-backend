@@ -5,6 +5,7 @@ import methodOverride from 'method-override';
 import { urlencoded } from 'express';
 import 'express-async-errors';
 import { rateLimit } from 'express-rate-limit';
+import cookieParser from 'cookie-parser';
 import { handleError } from './utils/errors';
 import { eventsRouter } from './routes/events.routes';
 import { usersRouter } from './routes/users.routes';
@@ -21,6 +22,7 @@ app.use(
 );
 
 app.use(json());
+app.use(cookieParser());
 app.use(
   rateLimit({
     windowMs: 5 * 60 * 1000, //15 minutes
@@ -30,8 +32,8 @@ app.use(
 app.use(methodOverride('_method'));
 app.use(urlencoded({ extended: true }));
 
-app.use('/events', eventsRouter);
 app.use('/user', usersRouter);
+app.use('/events', eventsRouter);
 app.use('/event/photos', eventsPhotos);
 app.use(handleError);
 
