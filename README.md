@@ -1,4 +1,5 @@
 # :construction_worker: To-Do-Zen v0.1.0 backend
+
 The To-Do-Zen application is a simple tool that allows users to manage their task list. It enables adding, removing, and marking tasks as completed. This web application is accessible through an internet browser. Additionally, the application offers the functionality to review one's progress over time, acting not only as a task list but also as a habit tracker. This feature allows users not just to manage current tasks but also to monitor their habits and progress towards long-term goals. This added functionality makes the application a more versatile tool for time management and personal development.
 
 ## 🧘‍♀️ Resources
@@ -20,7 +21,7 @@ The To-Do-Zen application is a simple tool that allows users to manage their tas
 ## :camel: Project structure
 
 ```
-HeadHunterG11-BE/
+to-do-zen-app-back/
 ├── records/
 |   ├── task.record.ts
 │   └── event.record.ts
@@ -44,6 +45,7 @@ HeadHunterG11-BE/
 └── tsconfig.json
 
 ```
+
 ## 🦋 Installation project
 
 **Clone the project:**
@@ -59,10 +61,13 @@ cd to-do-zen-app-frontend
 ```
 
 **Install dependencies:**
+
 ```
 npm install
 ```
+
 **Start the server:**
+
 ```
 npm start
 ```
