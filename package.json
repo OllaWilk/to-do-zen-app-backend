@@ -2,11 +2,12 @@
   "name": "to-do-zen-app-back",
   "version": "0.2.0",
   "description": "to-do-zen-app-backend",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
-    "start": "ts-node index.ts",
-    "start:dev": "tsnd index.ts",
+    "dev": "ts-node src/index.ts",
     "build": "tsc",
+    "start": "node dist/index.js",
+    "start:dev": "tsnd index.ts",
     "test": "jest"
   },
   "author": "Aleksandra Wilk",

@@ -10,6 +10,7 @@ import { handleError } from './utils/errors';
 import { eventsRouter } from './routes/events.routes';
 import { usersRouter } from './routes/users.routes';
 import { eventsPhotos } from './routes/eventsPhotos.routers';
+import { getAllUsers } from './controllers/usersController';
 
 const app = express();
 dotenv.config();

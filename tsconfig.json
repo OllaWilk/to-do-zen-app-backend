@@ -8,9 +8,21 @@
     "module": "CommonJS",
     "lib": ["ES6"],
     "outDir": "dist",
+    "rootDir": "./",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "moduleResolution": "node",
-    "esModuleInterop": true
-  }
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": [
+    "index.ts",
+    "controllers/**/*.ts",
+    "routes/**/*.ts",
+    "utils/**/*.ts",
+    "types/**/*.ts",
+    "records/**/*.ts"
+  ],
+  "exclude": ["node_modules", "dist"]
 }
