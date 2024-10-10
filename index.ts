@@ -10,6 +10,7 @@ import { handleError } from './utils/errors';
 import { eventsRouter } from './routes/events.routes';
 import { usersRouter } from './routes/users.routes';
 import { eventsPhotos } from './routes/eventsPhotos.routers';
+import { testDatabaseConnection } from './utils/testDatabaseConnection';
 
 const app = express();
 dotenv.config();
@@ -39,6 +40,15 @@ app.use(handleError);
 
 const PORT = parseInt(process.env.PORT || '3001', 10);
 
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Listening on port http://localhost:${PORT}`);
-});
+async function startServer() {
+  try {
+    await testDatabaseConnection();
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(`Listening on port http://localhost:${PORT}`);
+    });
+  } catch (error) {
+    console.error('Nie udało się połączyć', error);
+  }
+}
+
+startServer();
