@@ -3,9 +3,9 @@ import { pool } from './db';
 export async function testDatabaseConnection() {
   try {
     await pool.query('SELECT 1');
-    console.log('Połączenie z bazą danych zostało nawiązane pomyślnie.');
+    console.log('Connection to the database was successfully established.');
   } catch (error) {
-    console.error('Błąd podczas łączenia z bazą danych:', error);
+    console.error('Error while connecting to the database:', error);
     process.exit(1);
   }
 }

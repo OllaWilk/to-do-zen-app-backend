@@ -16,7 +16,6 @@ export const usersRouter = Router();
 
 usersRouter
   // Apply the requireAuth middleware only to the GET / route
-  // .get('/', requireAuth, getAllUsers)
   .get('/me', requireAuth, (req: CustomRequest, res) => {
     res.json(req.user);
   })
@@ -24,5 +23,4 @@ usersRouter
   // Routes without authentication
   .post('/login', loginUser)
   .post('/signup', signupUser)
-  .post('/logout', logoutUser)
-  .get('/', getAllUsers);
+  .post('/logout', logoutUser);
