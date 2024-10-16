@@ -47,7 +47,7 @@ async function startServer() {
       console.log(`Listening on port http://localhost:${PORT}`);
     });
   } catch (error) {
-    console.error('Nie udało się połączyć', error);
+    console.error('Error while starting server', error);
   }
 }
 

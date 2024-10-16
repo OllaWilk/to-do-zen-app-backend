@@ -36,8 +36,7 @@ export const signupUser = async (req: Request, res: Response) => {
       httpOnly: true,
       secure: isProduction,
       maxAge: 3 * 24 * 60 * 60 * 1000,
-      domain: process.env.COOKIE_DOMAIN,
-      sameSite: false,
+      sameSite: 'none',
     });
 
     res.status(201).json({ user, token });
@@ -57,7 +56,6 @@ export const loginUser = async (req: Request, res: Response) => {
       httpOnly: true,
       secure: isProduction,
       maxAge: 3 * 24 * 60 * 60 * 1000, // 3 days
-      domain: process.env.COOKIE_DOMAIN,
       sameSite: 'none',
     });
 

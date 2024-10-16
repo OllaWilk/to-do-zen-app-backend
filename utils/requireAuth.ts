@@ -15,7 +15,6 @@ export const requireAuth = async (
   // Read the token from the cookie
   const token = req.cookies.token;
 
-  console.log('TOKEN', token);
   // Check if the token exists
   if (!token) {
     return res.status(401).json({ error: 'Authorization token required' });
@@ -43,6 +42,5 @@ export const requireAuth = async (
     next();
   } catch (err) {
     res.status(401).json({ error: 'Request is not authorized' });
-    res.send(req.cookies);
   }
 };
