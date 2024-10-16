@@ -5,9 +5,9 @@ The To-Do-Zen application is a simple tool that allows users to manage their tas
 ## 🧘‍♀️ Resources
 
 **Live demo:** IN PROGRESS \
-**Github frontend:** [https://github.com/OllaWilk/to-do-zen-app-frontend](https://github.com/OllaWilk/to-do-zen-app-frontend)
+**Github frontend:** [https://github.com/OllaWilk/spacesteps-frontend](https://github.com/OllaWilk/spacesteps-frontend)
 
-**Github backend:** [https://github.com/OllaWilk/to-do-zen-app-backend](https://github.com/OllaWilk/to-do-zen-app-backend)
+**Github backend:** [https://github.com/OllaWilk/spacesteps-backend](https://github.com/OllaWilk/spacesteps-backend.git) 
 
 ## 🐞 Tech Stack
 
