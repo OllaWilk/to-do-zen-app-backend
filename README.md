@@ -1,13 +1,14 @@
-# :construction_worker: To-Do-Zen v0.1.0 backend
+# :construction_worker: Splot v0.1.0 backend
 
-The To-Do-Zen application is a simple tool that allows users to manage their task list. It enables adding, removing, and marking tasks as completed. This web application is accessible through an internet browser. Additionally, the application offers the functionality to review one's progress over time, acting not only as a task list but also as a habit tracker. This feature allows users not just to manage current tasks but also to monitor their habits and progress towards long-term goals. This added functionality makes the application a more versatile tool for time management and personal development.
+The Splot application is a simple tool that allows users to manage their task list. It enables adding, removing, and marking tasks as completed. This web application is accessible through an internet browser. Additionally, the application offers the functionality to review one's progress over time, acting not only as a task list but also as a habit tracker. This feature allows users not just to manage current tasks but also to monitor their habits and progress towards long-term goals. This added functionality makes the application a more versatile tool for time management and personal development.
 
 ## 🧘‍♀️ Resources
 
-**Live demo:** IN PROGRESS \
-**Github frontend:** [https://github.com/OllaWilk/spacesteps-frontend](https://github.com/OllaWilk/spacesteps-frontend)
+**Live demo:** [https://www.splotapp.eu](https://www.splotapp.eu)
 
-**Github backend:** [https://github.com/OllaWilk/spacesteps-backend](https://github.com/OllaWilk/spacesteps-backend.git) 
+**Github frontend:** [https://github.com/OllaWilk/splot-frontend](https://github.com/OllaWilk/splot-frontend)
+
+**Github backend:** [https://github.com/OllaWilk/splot-backend](https://github.com/OllaWilk/splot-backend.git) 
 
 ## 🐞 Tech Stack
 
@@ -21,7 +22,7 @@ The To-Do-Zen application is a simple tool that allows users to manage their tas
 ## :camel: Project structure
 
 ```
-to-do-zen-app-back/
+splot-backend/
 ├── records/
 |   ├── task.record.ts
 │   └── event.record.ts
@@ -51,13 +52,13 @@ to-do-zen-app-back/
 **Clone the project:**
 
 ```
-git clone https://github.com/OllaWilk/to-do-zen-app-frontend.git
+git clone https://github.com/OllaWilk/splot-backend.git
 ```
 
 **Go to the project directory:**
 
 ```
-cd to-do-zen-app-frontend
+cd splot-backend
 ```
 
 **Install dependencies:**
